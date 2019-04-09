@@ -1,0 +1,12 @@
+# 百度API
+baidu:
+  #公司百度账号：app@linli580.com
+  appId: 15602469
+  appKey: zPPPQATHTBebk5PlzXMKknN5
+  secretKey: ro2PXaBlykrjqLsnbxvDbMVEmWzioEk0
+  url:
+    getAccessToken: https://aip.baidubce.com/oauth/2.0/token #获取授权标识
+    recognizeIdcard: https://aip.baidubce.com/rest/2.0/ocr/v1/idcard #识别身份证
+    shortUrlToken: 8356bf8ff6a763761a55e77b5b5734a7 #百度获取短链接token
+    createShortUrl: https://dwz.cn/admin/v2/create #获取短网址
+    recoverShortUrl: https://dwz.cn/admin/v2/query #恢复短网址
