@@ -1,7 +1,8 @@
 package com.yaoch.api.module.laofu.utils.stock;
 
-import com.yaoch.common.utils.HttpUtil;
-import lombok.extern.log4j.Log4j;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +29,19 @@ public class StockUtil {
     public static Stock getStockDetail(String stockCode) throws Exception {
         String url = SINA_STOCK_API + stockEncode(stockCode);
         log.info("获取股票行情接口:"+url);
-        String result = HttpUtil.get(url);
+        HttpClient client = new HttpClient();
+        GetMethod method = new GetMethod(url);
+        int statusCode = client.executeMethod(method);
+        if (statusCode != 200) {
+            log.debug("Method failed: " + method.getStatusLine());
+            return null;
+        }
+        String result = method.getResponseBodyAsString();
         log.info("获取新浪股票行情接口返回:" + result);
         result = result.substring(result.indexOf("=")+2,result.length());
         String[] stockInfo = result.split(",");
         Stock stock = new Stock();
-        stock.setStockName(stockInfo[0]);
+        stock.setStockName(new String(stockInfo[0].getBytes("UTF-8"),"UTF-8"));
         stock.setTodayOpenPrice(stockInfo[1]);
         stock.setYesterdayClosePrice(stockInfo[2]);
         stock.setPrice(stockInfo[3]);

@@ -11,6 +11,8 @@
     <modules>
         <module>fatych-api</module>
         <module>fatych-common</module>
+        <module>fatych-es</module>
+        <module>fatych-okex</module>
     </modules>
 
 
