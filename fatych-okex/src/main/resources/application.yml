@@ -1,0 +1,11 @@
+server:
+  port: 8081
+okex:
+  domain: https://www.okex.me
+  apiKey: 0d556f15-c41b-477f-baf1-715e9803f184
+  secretKey: C001783899C1F4C62A6340768ABD2EDA
+  passphrase: 1111111112
+
+
+
+
