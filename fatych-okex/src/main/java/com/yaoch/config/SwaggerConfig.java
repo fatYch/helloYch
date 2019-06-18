@@ -18,7 +18,7 @@ public class SwaggerConfig {
     public Docket controllerApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
-                        .title("肥美的开放平台")
+                        .title("肥美的韭菜场")
                         .description("本文档由盐焗肥肠特约赞助!")
                         .version("1.0.0")
                         .contact(new Contact("盐焗肥肠","http://blog,yaoch.top","yaocanhong@timesgroup.cn"))

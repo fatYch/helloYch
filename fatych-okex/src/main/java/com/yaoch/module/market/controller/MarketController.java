@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api("市场行情模块")
+@Api(tags = "行情模块")
 @RestController
 @RequestMapping("/market")
 public class MarketController {

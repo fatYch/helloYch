@@ -1,5 +1,11 @@
 package com.yaoch.common.utils;
 
+import org.apache.commons.httpclient.HttpConnection;
+import org.apache.commons.httpclient.HttpState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpUtil {
+
+    private final static Logger log = LoggerFactory.getLogger(HttpUtil.class);
 
 
     /**
@@ -51,7 +59,7 @@ public class HttpUtil {
      * @return response
      * @throws IOException
      */
-    static public String get(String url) throws IOException {
+    static public String get(String url) {
         return get(url, null);
     }
 
@@ -63,7 +71,7 @@ public class HttpUtil {
      * @throws IOException
      */
     static public String get(String url,
-                             Map<String, String> headers) throws IOException {
+                             Map<String, String> headers) {
         return fetch("GET", url, null, headers);
     }
 
@@ -281,48 +289,52 @@ public class HttpUtil {
      * @throws IOException
      */
     static public String fetch(String method, String url, String body,
-                               Map<String, String> headers) throws IOException {
-        // connection
-        URL u = new URL(url);
-        HttpURLConnection conn = (HttpURLConnection)u.openConnection();
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(10000);
+                               Map<String, String> headers) {
+        try {
+            // connection
+            URL u = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
+            conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
 
-        // method
-        if (method != null) {
-            conn.setRequestMethod(method);
-        }
 
-        // headers
-        if (headers != null) {
-            for(String key : headers.keySet()) {
-                conn.addRequestProperty(key, headers.get(key));
+            // method
+            if (method != null) {
+                conn.setRequestMethod(method);
             }
+
+            // headers
+            if (headers != null) {
+                for (String key : headers.keySet()) {
+                    conn.addRequestProperty(key, headers.get(key));
+                }
+            }
+
+            // body
+            if (body != null) {
+                conn.setDoOutput(true);
+                OutputStream os = conn.getOutputStream();
+                os.write(body.getBytes());
+                os.flush();
+                os.close();
+            }
+            InputStream is = conn.getResponseCode() == HttpURLConnection.HTTP_OK?
+                    conn.getInputStream() : conn.getErrorStream();
+            String response = streamToString(is);
+            is.close();
+
+            // handle redirects
+            if (conn.getResponseCode() == 301) {
+                String location = conn.getHeaderField("Location");
+                return fetch(method, location, body, headers);
+            }
+            return response;
+        } catch (Exception e) {
+            log.error("网络访问错误:", e);
         }
-
-        // body
-        if (body != null) {
-            conn.setDoOutput(true);
-            OutputStream os = conn.getOutputStream();
-            os.write(body.getBytes());
-            os.flush();
-            os.close();
-        }
-
-        // response
-        InputStream is = conn.getInputStream();
-        String response = streamToString(is);
-        is.close();
-
-        // handle redirects
-        if (conn.getResponseCode() == 301) {
-            String location = conn.getHeaderField("Location");
-            return fetch(method, location, body, headers);
-        }
-
-        return response;
+        return null;
     }
-
     /**
      * Read an input stream into a string
      * @param in
